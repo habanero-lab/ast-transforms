@@ -48,3 +48,10 @@ def new_ast_node_from_str(s, inline=True):
 def new_ast_name(name, ctx=None):
     ctx = ast.Load() if ctx == None else ctx
     return ast.Name(id=name, ctx=ctx)
+
+def new_ast_subscript(value, indices):
+    if len(indices) == 1:
+        slice = indices[0]
+    else:
+        slice = ast.Tuple(elts=indices, ctx=ast.Load())
+    return ast.Subscript(value=value, slice=slice)
