@@ -31,6 +31,8 @@ def new_ast_call(name_node, args, keywords=None):
     if keywords:
         for k, v in keywords.items():
             kws.append(ast.keyword(arg=k, value=v))
+    if type(args) != list:
+        args = [args]
     node = ast.Call(func=name_node, args=args, keywords=kws)
     return node
 
@@ -55,3 +57,9 @@ def new_ast_subscript(value, indices):
     else:
         slice = ast.Tuple(elts=indices, ctx=ast.Load())
     return ast.Subscript(value=value, slice=slice)
+
+def new_ast_assign(target, value):
+    return ast.Assign(targets=[target], value=value, lineno=None)
+
+def new_ast_list(elts):
+    return ast.List(elts=elts, ctx=ast.Load())
