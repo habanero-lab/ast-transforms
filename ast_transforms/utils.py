@@ -1,4 +1,5 @@
 import ast
+import copy
 
 def dump(tree):
     print(ast.dump(tree))
@@ -63,3 +64,21 @@ def new_ast_assign(target, value):
 
 def new_ast_list(elts):
     return ast.List(elts=elts, ctx=ast.Load())
+
+def new_ast_add(left, right):
+    return ast.BinOp(left=left, op=ast.Add(), right=right)
+
+def deepcopy_ast_node(node, ctx=None):
+    newnode = copy.deepcopy(node)
+    newnode.ctx = ctx
+    return newnode
+
+def get_init_value_for_reduction(f):
+    if f == 'max':
+        return new_ast_const(-float('inf'))
+    elif f == 'min':
+        return new_ast_const(float('inf'))
+    elif f == 'sum':
+        return new_ast_const(0)
+    else:
+        assert False
