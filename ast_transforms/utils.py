@@ -2,3 +2,49 @@ import ast
 
 def dump(tree):
     print(ast.dump(tree))
+
+def dump_code(node):
+    print(ast.unparse(node))
+
+def new_ast_const(val):
+    return ast.Constant(value=val)
+
+def new_ast_for(target, range_node, body=None):
+    realbody = body if body is not None else []
+    loop = ast.For(target=target, iter=range_node, body=realbody, lineno=None,
+        orelse=[], type_ignores=[])
+    return loop
+
+def new_ast_perfect_for(targets, range_nodes, body=None):
+    parent = root = ast.Module(body=[])
+    for tar, rg in zip(targets, range_nodes):
+        loop = new_ast_for(tar, rg)
+        parent.body.append(loop)
+        parent = loop
+    
+    if body is not None:
+        parent.body.extend(body)
+    return root.body[0]
+
+def new_ast_call(name_node, args, keywords=None):
+    kws = []
+    if keywords:
+        for k, v in keywords.items():
+            kws.append(ast.keyword(arg=k, value=v))
+    node = ast.Call(func=name_node, args=args, keywords=kws)
+    return node
+
+def new_ast_range(stop, start=new_ast_const(0), step=new_ast_const(1)):
+    node = ast.Call(func=new_ast_name('range'), args=[start, stop, step], keywords=[])
+    return node
+
+def new_ast_node_from_str(s, inline=True):
+    expr = ast.parse(s).body[0]
+    if inline:
+        return expr.value
+    else:
+        return expr
+
+def new_ast_name(name, ctx=None):
+    ctx = ast.Load() if ctx == None else ctx
+    return ast.Name(id=name, ctx=ctx)
