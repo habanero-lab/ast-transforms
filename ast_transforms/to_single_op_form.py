@@ -28,6 +28,25 @@ class BinaryOpToAssign(ast.NodeTransformer):
         self.stmts.append(assign)
         return assign
 
+    def visit_Compare(self, node):
+        assert len(node.comparators) == 1
+        newleft = self.visit(node.left)
+        newright = self.visit(node.comparators[0])
+        # newleft and newright now may be statements
+        if isinstance(newleft, ast.Assign):
+            node.left = ast.Name(id = newleft.targets[0].id, ctx = ast.Load())
+        else:
+            node.left = newleft
+
+        if isinstance(newright, ast.Assign):
+            node.right = ast.Name(id = newright.targets[0].id, ctx = ast.Load())
+        else:
+            node.right = newright
+
+        assign = ast.Assign(targets = [ast.Name(id = self.get_new_var(), ctx = ast.Store())], value = node, lineno = node.lineno, col_offset = node.col_offset)
+        self.stmts.append(assign)
+        return assign
+
 
 class ToSingleOperatorStmts(ast.NodeTransformer):
     def visit_Assign(self, node):
