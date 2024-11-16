@@ -1,5 +1,5 @@
 import ast
-from .utils import *
+from astlib.utils import *
 
 class BinaryOpToAssign(ast.NodeTransformer):
     def __init__(self):
@@ -74,7 +74,7 @@ class RemoveRedundantAssign(ast.NodeTransformer):
             return node
 
 
-def transform(tree):
+def transform(tree, **kwargs):
     tree = ReturnExprToStmt().visit(tree)
     tree = ToSingleOperatorStmts().visit(tree)
     tree = RemoveRedundantAssign().visit(tree)
