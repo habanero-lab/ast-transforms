@@ -68,6 +68,15 @@ def new_ast_list(elts):
 def new_ast_add(left, right):
     return ast.BinOp(left=left, op=ast.Add(), right=right)
 
+def new_ast_mul(left, right):
+    return ast.BinOp(left=left, op=ast.Mult(), right=right)
+
+def new_ast_sub(left, right):
+    return ast.BinOp(left=left, op=ast.Sub(), right=right)
+
+def new_ast_div(left, right):
+    return ast.BinOp(left=left, op=ast.Div(), right=right)
+
 def deepcopy_ast_node(node, ctx=None):
     newnode = copy.deepcopy(node)
     newnode.ctx = ctx
