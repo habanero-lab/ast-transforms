@@ -78,7 +78,7 @@ def get_init_value_for_reduction(f):
         return new_ast_const(-float('inf'))
     elif f == 'min':
         return new_ast_const(float('inf'))
-    elif f == 'sum':
+    elif f == 'sum' or f == 'matmul':
         return new_ast_const(0)
     else:
         assert False
