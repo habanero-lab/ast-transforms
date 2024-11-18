@@ -91,3 +91,13 @@ def get_init_value_for_reduction(f):
         return new_ast_const(0)
     else:
         assert False
+
+def load_code(src):
+    from pathlib import Path
+    Path("tmp.py").write_text(src, encoding='utf-8')
+    import sys, importlib
+    spec = importlib.util.spec_from_file_location("module.name", "tmp.py")
+    foo = importlib.util.module_from_spec(spec)
+    sys.modules["module.name"] = foo
+    spec.loader.exec_module(foo)
+    return foo
