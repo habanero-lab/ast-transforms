@@ -77,10 +77,19 @@ def new_ast_sub(left, right):
 def new_ast_div(left, right):
     return ast.BinOp(left=left, op=ast.Div(), right=right)
 
+def new_ast_function_def(name, args, body):
+    return ast.FunctionDef(name=name, args=args, body=body, decorator_list=[], lineno=None)
+
 def deepcopy_ast_node(node, ctx=None):
     newnode = copy.deepcopy(node)
     newnode.ctx = ctx
     return newnode
+
+def new_ast_return(value):
+    return ast.Return(value=value, lineno=None)
+
+def new_ast_arg(name, annotation=None):
+    return ast.arg(arg=name, annotation=annotation)
 
 def get_init_value_for_reduction(f):
     if f == 'max':
