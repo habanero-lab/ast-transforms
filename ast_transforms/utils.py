@@ -100,4 +100,5 @@ def load_code(src):
     foo = importlib.util.module_from_spec(spec)
     sys.modules["module.name"] = foo
     spec.loader.exec_module(foo)
+    Path("tmp.py").unlink()
     return foo
