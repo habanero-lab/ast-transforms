@@ -80,6 +80,9 @@ def new_ast_div(left, right):
 def new_ast_function_def(name, args, body):
     return ast.FunctionDef(name=name, args=args, body=body, decorator_list=[], lineno=None)
 
+def new_ast_attribute(value, attr, ctx=ast.Load()):
+    return ast.Attribute(value=value, attr=attr, ctx=ctx)
+
 def deepcopy_ast_node(node, ctx=None):
     newnode = copy.deepcopy(node)
     newnode.ctx = ctx
