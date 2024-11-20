@@ -41,23 +41,29 @@ def new_ast_range(stop, start=new_ast_const(0), step=new_ast_const(1)):
     node = ast.Call(func=new_ast_name('range'), args=[start, stop, step], keywords=[])
     return node
 
-def new_ast_node_from_str(s, inline=True):
+def new_ast_node_from_str(s, ctx=ast.Load(), inline=True):
     expr = ast.parse(s).body[0]
     if inline:
+        expr.value.ctx = ctx
         return expr.value
     else:
+        expr.ctx = ctx
         return expr
+
+def new_ast_assign_from_str(s):
+    expr = ast.parse(s).body[0]
+    return expr
 
 def new_ast_name(name, ctx=None):
     ctx = ast.Load() if ctx == None else ctx
     return ast.Name(id=name, ctx=ctx)
 
-def new_ast_subscript(value, indices):
+def new_ast_subscript(value, indices, ctx=ast.Load()):
     if len(indices) == 1:
         slice = indices[0]
     else:
         slice = ast.Tuple(elts=indices, ctx=ast.Load())
-    return ast.Subscript(value=value, slice=slice)
+    return ast.Subscript(value=value, slice=slice, ctx=ctx)
 
 def new_ast_assign(target, value):
     return ast.Assign(targets=[target], value=value, lineno=None)
