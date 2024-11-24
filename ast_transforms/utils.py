@@ -112,11 +112,12 @@ def get_init_value_for_reduction(f):
 
 def load_code(src):
     from pathlib import Path
-    Path("tmp.py").write_text(src, encoding='utf-8')
-    import sys, importlib
-    spec = importlib.util.spec_from_file_location("module.name", "tmp.py")
+    import sys, importlib, hashlib
+    module_name = hashlib.sha256(src.encode()).hexdigest()
+    Path(f"tmp_{module_name}.py").write_text(src, encoding='utf-8')
+    spec = importlib.util.spec_from_file_location(f"module_{module_name}", f"tmp_{module_name}.py")
     foo = importlib.util.module_from_spec(spec)
-    sys.modules["module.name"] = foo
+    sys.modules[f"module_{module_name}"] = foo
     spec.loader.exec_module(foo)
-    Path("tmp.py").unlink()
+    Path(f"tmp_{module_name}.py").unlink()
     return foo
