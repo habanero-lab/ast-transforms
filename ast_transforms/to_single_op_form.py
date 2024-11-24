@@ -10,6 +10,15 @@ class BinaryOpToAssign(ast.NodeTransformer):
         self.var_count += 1
         return '__v%d' % self.var_count
 
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        node = new_ast_assign(
+            target = new_ast_name(self.get_new_var(), ctx = ast.Store()),
+            value = node
+        )
+        self.stmts.append(node)
+        return node
+
     def visit_BinOp(self, node):
         newleft = self.visit(node.left)
         newright = self.visit(node.right)
@@ -24,7 +33,11 @@ class BinaryOpToAssign(ast.NodeTransformer):
         else:
             node.right = newright
 
-        assign = ast.Assign(targets = [ast.Name(id = self.get_new_var(), ctx = ast.Store())], value = node, lineno = node.lineno, col_offset = node.col_offset)
+        #assign = ast.Assign(targets = [ast.Name(id = self.get_new_var(), ctx = ast.Store())], value = node, lineno = node.lineno, col_offset = node.col_offset)
+        assign = new_ast_assign(
+            target = new_ast_name(self.get_new_var(), ctx = ast.Store()),
+            value = node
+        )
         self.stmts.append(assign)
         return assign
 
