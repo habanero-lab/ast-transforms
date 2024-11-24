@@ -2,13 +2,14 @@ import ast
 from ast_transforms.utils import *
 
 class BinaryOpToAssign(ast.NodeTransformer):
+    var_count = 0
+
     def __init__(self):
         self.stmts = []
-        self.var_count = 0
 
     def get_new_var(self):
-        self.var_count += 1
-        return '__v%d' % self.var_count
+        BinaryOpToAssign.var_count += 1
+        return '__v%d' % BinaryOpToAssign.var_count
 
     def visit_Call(self, node):
         self.generic_visit(node)
