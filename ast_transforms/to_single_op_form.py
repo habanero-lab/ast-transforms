@@ -80,6 +80,16 @@ class ToSingleOperatorStmts(ast.NodeTransformer):
                 else:
                     node.value.args.append(newargs)
             return visitor.stmts + [node]
+        elif isinstance(node.value, ast.Tuple):
+            visitor = BinaryOpToAssign()
+            newelts = [visitor.visit(arg) for arg in node.value.elts]
+            node.value.elts = []
+            for newelt in newelts:
+                if isinstance(newelt, ast.Assign):
+                    node.value.elts.append(ast.Name(id = newelt.targets[0].id, ctx = ast.Load()))
+                else:
+                    node.value.elts.append(newelt)
+            return visitor.stmts + [node]
         else:
             return node
 
