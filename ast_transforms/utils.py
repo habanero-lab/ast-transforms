@@ -114,10 +114,11 @@ def load_code(src):
     from pathlib import Path
     import sys, importlib, hashlib
     module_name = hashlib.sha256(src.encode()).hexdigest()
-    Path(f"tmp_{module_name}.py").write_text(src, encoding='utf-8')
-    spec = importlib.util.spec_from_file_location(f"module_{module_name}", f"tmp_{module_name}.py")
+    file_name = f"/tmp/tmp_{module_name}.py"
+    Path(file_name).write_text(src, encoding='utf-8')
+    spec = importlib.util.spec_from_file_location(f"module_{module_name}", file_name)
     foo = importlib.util.module_from_spec(spec)
     sys.modules[f"module_{module_name}"] = foo
     spec.loader.exec_module(foo)
-    Path(f"tmp_{module_name}.py").unlink()
+    Path(file_name).unlink()
     return foo
