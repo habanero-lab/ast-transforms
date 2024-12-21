@@ -110,7 +110,7 @@ def get_init_value_for_reduction(f):
     else:
         assert False
 
-def load_code(src):
+def load_code(src, keep_file=False):
     from pathlib import Path
     import sys, importlib, hashlib
     module_name = hashlib.sha256(src.encode()).hexdigest()
@@ -120,5 +120,6 @@ def load_code(src):
     foo = importlib.util.module_from_spec(spec)
     sys.modules[f"module_{module_name}"] = foo
     spec.loader.exec_module(foo)
-    Path(file_name).unlink()
+    if not keep_file:
+        Path(file_name).unlink()
     return foo
