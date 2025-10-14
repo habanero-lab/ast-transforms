@@ -1,35 +1,37 @@
-def add_func_decorator(tree, *args):
-    '''Apply the `add_func_decorator` AST transform.'''
+def add_func_decorator(tree, decorator):
+    """
+    Adds a decorator to all functions in the AST.
+
+    Parameters
+    ----------
+    tree : ast.AST
+        The AST of the Python code to transform.
+    decorator : str
+        The decorator to add. Can be a fully-qualified name
+        (e.g., "numba.jit") or a simple name (e.g., "jit").
+
+    Returns
+    -------
+    ast.AST
+        The transformed AST.
+    """
     from .passes import add_func_decorator as m
-    return m.transform(tree, *args)
+    return m.transform(tree, decorator)
 
-def attach_def_use_vars(tree, *args):
-    '''Apply the `attach_def_use_vars` AST transform.'''
-    from .passes import attach_def_use_vars as m
-    return m.transform(tree, *args)
+def remove_func_decorator(tree):
+    """
+    Remove all decorators from functions in the AST.
 
-def remove_func_arg_annotation(tree, *args):
-    '''Apply the `remove_func_arg_annotation` AST transform.'''
-    from .passes import remove_func_arg_annotation as m
-    return m.transform(tree, *args)
+    Parameters
+    ----------
+    tree : ast.AST
+        The AST of the Python code to transform.
 
-def remove_func_decorator(tree, *args):
-    '''Apply the `remove_func_decorator` AST transform.'''
+    Returns
+    -------
+    ast.AST
+        The transformed AST.
+    """
     from .passes import remove_func_decorator as m
-    return m.transform(tree, *args)
-
-def replace_name(tree, *args):
-    '''Apply the `replace_name` AST transform.'''
-    from .passes import replace_name as m
-    return m.transform(tree, *args)
-
-def to_single_op_form(tree, *args):
-    '''Apply the `to_single_op_form` AST transform.'''
-    from .passes import to_single_op_form as m
-    return m.transform(tree, *args)
-
-def where_to_ternary(tree, *args):
-    '''Apply the `where_to_ternary` AST transform.'''
-    from .passes import where_to_ternary as m
-    return m.transform(tree, *args)
+    return m.transform(tree)
 
