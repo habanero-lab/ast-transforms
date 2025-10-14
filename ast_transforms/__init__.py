@@ -35,3 +35,6 @@ def remove_func_decorator(tree):
     from .passes import remove_func_decorator as m
     return m.transform(tree)
 
+def get_used_names(tree, no_funcname=False):
+    from .passes import get_used_names as m
+    return m.analyze(tree, no_funcname)
