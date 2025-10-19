@@ -1,5 +1,5 @@
 import ast
-from .utils import *
+from ..utils import *
 
 class NameVistor(ast.NodeVisitor):
     def __init__(self):

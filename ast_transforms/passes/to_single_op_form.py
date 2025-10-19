@@ -1,5 +1,5 @@
 import ast
-from ast_transforms.utils import *
+from ..utils import *
 
 class BinaryOpToAssign(ast.NodeTransformer):
     var_count = 0

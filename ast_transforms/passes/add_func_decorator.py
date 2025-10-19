@@ -1,5 +1,5 @@
 import ast
-from .utils import *
+from ..utils import *
 
 class AddFuncDecorator(ast.NodeTransformer):
     def __init__(self, decorator):
