@@ -8,7 +8,7 @@ def test_get_used_names():
         c[i] = a[i] + b[i]
     """
     tree = ast.parse(textwrap.dedent(code))
-    names = at.get_used_names(tree)
+    names = at.get_used_names(tree, no_funcname=False)
     assert sorted(names) == sorted(['N', 'i', 'range', 'c', 'a', 'b'])
 
     names = at.get_used_names(tree, no_funcname=True)
