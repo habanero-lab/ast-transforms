@@ -56,7 +56,9 @@ def get_used_names(tree, no_funcname=True):
 
 def hoist_shape_attr(tree):
     '''
-    Hoists shape attribute accesses in the AST.
+    Hoists shape attribute accesses in the AST. For example, 
+    `a.shape[0]` is replaced with `a_shape_0`, and an assignment
+    `a_shape_0 = a.shape[0]` is inserted before the loop.
 
     Parameters
     ----------

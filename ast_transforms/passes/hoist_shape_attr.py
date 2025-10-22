@@ -2,8 +2,8 @@ import ast
 
 class HoistShapeAttr(ast.NodeTransformer):
     '''
-    Updates `a.shape[0]` to `a_shape_0` and adds `a_shape_0 = a.shape[0]` at the
-    beginning of the loop body.
+    Updates `a.shape[0]` to `a_shape_0` and inserts an assignment `a_shape_0 = a.shape[0]`
+    before the loop.
     '''
     def __init__(self):
         self.hoisted_shapes = []
