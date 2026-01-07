@@ -16,7 +16,10 @@ class AttachShapes(ast.NodeVisitor):
                 self.var_shapes[var] = None  # otherwise shape is undefined
 
     def visit_Constant(self, node):
-        self.node_shapes[node] = ()
+        if isinstance(node.value, (int, float, bool)):
+            self.node_shapes[node] = ()
+        else:
+            self.node_shapes[node] = None  # otherwise shape is undefined
 
     def visit_Name(self, node):
         if isinstance(node.ctx, ast.Load):
