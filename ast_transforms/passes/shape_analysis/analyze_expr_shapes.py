@@ -1,11 +1,14 @@
 import ast
+import inspect
 from . import func_table
 
 class AnalyzeExprShapes(ast.NodeVisitor):
     def __init__(self, rt_vals):
         self.node_shapes = {}
         self.var_shapes = {}
+        self.modules = {}
         self.init_rt_var_shapes(rt_vals)
+        self.init_module_names(rt_vals)
 
     def init_rt_var_shapes(self, rt_vals):
         for var, val in rt_vals.items():
@@ -15,6 +18,11 @@ class AnalyzeExprShapes(ast.NodeVisitor):
                 self.var_shapes[var] = val.shape
             else:
                 self.var_shapes[var] = None  # otherwise shape is undefined
+
+    def init_module_names(self, rt_vals):
+        for var, val in rt_vals.items():
+            if inspect.ismodule(val):
+                self.modules[var] = val
 
     def visit_Constant(self, node):
         if isinstance(node.value, (int, float, bool)):
@@ -41,6 +49,23 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             self.node_shapes[node] = f(self.node_shapes[node.left], self.node_shapes[node.right])
         else:
             raise NotImplementedError
+        
+    def visit_Call(self, node):
+        for arg in node.args:
+            self.visit(arg)
+
+        if isinstance(node.func, ast.Name):
+            f = getattr(func_table, node.func.id)
+        elif isinstance(node.func, ast.Attribute):
+            assert isinstance(node.func.value, ast.Name), \
+                "Function calls only suport named calls or named module calls"            
+            assert node.func.value.id in self.modules
+            module_name = self.modules[node.func.value.id].__name__
+            f = getattr(func_table, f"{module_name}_{node.func.attr}")
+        else:
+            assert False, "Impossible path"
+
+        self.node_shapes[node] = f(*[self.node_shapes[arg] for arg in node.args])
 
 
 def visit(tree, rt_vals):

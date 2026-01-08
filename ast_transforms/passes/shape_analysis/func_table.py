@@ -14,3 +14,6 @@ def matmul_generic(left, right):
     a, b = left.pop(), right.pop(0)
     assert a == b, f"The contracting dimension must be the same for matmul, got {a} and {b}"
     return tuple(left + right)
+
+def numpy_add(a, b):
+    return binop_generic(a, b)
