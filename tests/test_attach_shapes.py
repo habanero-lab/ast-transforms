@@ -73,7 +73,6 @@ def test7():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
     assert results == [('a', (100,)), ('b', (100,)), ('a + b', (100,)), ('1', ()), ('a + b + 1', (100,))]
 
-
 def test8():
     code = """
     a @ b

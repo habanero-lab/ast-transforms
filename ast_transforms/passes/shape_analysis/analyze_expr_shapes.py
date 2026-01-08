@@ -1,7 +1,7 @@
 import ast
 from . import func_table
 
-class AttachShapes(ast.NodeVisitor):
+class AnalyzeExprShapes(ast.NodeVisitor):
     def __init__(self, rt_vals):
         self.node_shapes = {}
         self.var_shapes = {}
@@ -24,9 +24,12 @@ class AttachShapes(ast.NodeVisitor):
 
     def visit_Name(self, node):
         if isinstance(node.ctx, ast.Load):
-            self.node_shapes[node] = self.var_shapes[node.id]
+            if node.id in self.var_shapes:
+                self.node_shapes[node] = self.var_shapes[node.id]
+            else:
+                raise RuntimeError
         else:
-            raise NotImplementedError
+            raise RuntimeError
         
     def visit_BinOp(self, node):
         self.generic_visit(node)
@@ -36,9 +39,11 @@ class AttachShapes(ast.NodeVisitor):
         elif isinstance(node.op, ast.MatMult):
             f = getattr(func_table, 'matmul_generic')
             self.node_shapes[node] = f(self.node_shapes[node.left], self.node_shapes[node.right])
+        else:
+            raise NotImplementedError
 
 
 def visit(tree, rt_vals):
-    visitor = AttachShapes(rt_vals)
+    visitor = AnalyzeExprShapes(rt_vals)
     visitor.visit(tree)
     return visitor.node_shapes
