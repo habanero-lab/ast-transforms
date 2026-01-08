@@ -18,5 +18,9 @@ def matmul_generic(left, right):
     assert a == b, f"The contracting dimension must be the same for matmul, got {a} and {b}"
     return tuple(left + right)
 
+def pow(a, b):
+    assert len(b) == 0 or len(b) == 1 or len(b) == len(a)
+    return a
+
 def numpy_add(a, b):
     return binop_generic(a, b)
