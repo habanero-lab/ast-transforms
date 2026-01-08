@@ -24,6 +24,7 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             if inspect.ismodule(val):
                 self.modules[var] = val
 
+    # Two types of leaf nodes
     def visit_Constant(self, node):
         if isinstance(node.value, (int, float, bool)):
             self.node_shapes[node] = ()
@@ -39,6 +40,12 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         else:
             raise RuntimeError
         
+    # Five ways to combine nodes
+    def visit_UnaryOp(self, node):
+        self.generic_visit(node)
+        f = getattr(func_table, 'uop_generic')
+        self.node_shapes[node] = f(self.node_shapes[node.operand])
+    
     def visit_BinOp(self, node):
         self.generic_visit(node)
         if isinstance(node.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv)):

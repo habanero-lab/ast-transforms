@@ -1,3 +1,6 @@
+def uop_generic(a):
+    return a
+
 def binop_generic(left, right):
     if left == right:
         return left
