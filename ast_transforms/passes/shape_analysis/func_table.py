@@ -13,10 +13,10 @@ def binop_generic(left, right):
     
 def matmul_generic(left, right):
     if not (len(left) > 0 and len(right) > 0):
-        raise RuntimeError("Matmul cannot happen between scalars")
+        raise RuntimeError("Matmul cannot happen on scalar operands")
 
     if left[-1] != right[0]:
-        raise RuntimeError(f"Mismatched contracting dimension found for matmul: {a} and {b}")
+        raise RuntimeError(f"Mismatched contracting dimension found for matmul: {left[-1]} and {right[0]}")
     return left[:-1] + right[1:]
 
 def numpy_pow(a, b):
