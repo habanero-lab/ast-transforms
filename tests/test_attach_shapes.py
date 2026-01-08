@@ -188,6 +188,48 @@ def test_call_pow3():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
     assert results == [('a', (100,)), ('b', (100,)), ('pow(a, b)', (100,))]
 
+def test_call_np_pow1():
+    code = """
+    np.pow(a, b)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": 2, 
+        "b": 3,
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', ()), ('b', ()), ('np.pow(a, b)', ())]
+
+def test_call_np_pow2():
+    code = """
+    np.pow(a, b)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(100),
+        "b": 3,
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (100,)), ('b', ()), ('np.pow(a, b)', (100,))]
+
+def test_call_np_pow3():
+    code = """
+    np.pow(a, b)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(100),
+        "b": np.ones(100),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (100,)), ('b', (100,)), ('np.pow(a, b)', (100,))]
+
 
 def test10():
     code = """
