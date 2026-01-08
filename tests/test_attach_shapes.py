@@ -10,8 +10,8 @@ def test1():
     tree = ast.parse(textwrap.dedent(code))
     rt_vals = {}
     shape_info = shape_analysis.visit(tree, rt_vals)
-    for node, shape in shape_info.items():
-        assert ast.unparse(node) == '1' and shape == ()
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('1', ()), ('1', ()), ('1 + 1', ())]
 
 def test2():
     code = """
@@ -20,8 +20,8 @@ def test2():
     tree = ast.parse(textwrap.dedent(code))
     rt_vals = {}
     shape_info = shape_analysis.visit(tree, rt_vals)
-    for node, shape in shape_info.items():
-        assert ast.unparse(node) == '1.0' and shape == ()
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('1.0', ()), ('1.0', ()), ('1.0 + 1.0', ())]
 
 def test3():
     code = """
@@ -30,8 +30,8 @@ def test3():
     tree = ast.parse(textwrap.dedent(code))
     rt_vals = {"a": 1}
     shape_info = shape_analysis.visit(tree, rt_vals)
-    for node, shape in shape_info.items():
-        assert ast.unparse(node) in ['a', '1'] and shape == ()
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', ()), ('1', ()), ('a + 1', ())]
 
 def test4():
     code = """
@@ -40,8 +40,8 @@ def test4():
     tree = ast.parse(textwrap.dedent(code))
     rt_vals = {"a": np.int32(1)}
     shape_info = shape_analysis.visit(tree, rt_vals)
-    for node, shape in shape_info.items():
-        assert ast.unparse(node) in ['a', '1'] and shape == ()
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', ()), ('1', ()), ('a + 1', ())]
 
 
 def test10():

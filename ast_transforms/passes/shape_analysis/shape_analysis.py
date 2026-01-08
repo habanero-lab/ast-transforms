@@ -1,4 +1,5 @@
 import ast
+from . import func_table
 
 class AttachShapes(ast.NodeVisitor):
     def __init__(self, rt_vals):
@@ -26,6 +27,12 @@ class AttachShapes(ast.NodeVisitor):
             self.node_shapes[node] = self.var_shapes[node.id]
         else:
             raise NotImplementedError
+        
+    def visit_BinOp(self, node):
+        self.generic_visit(node)
+        if isinstance(node.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv)):
+            f = getattr(func_table, 'binop_generic')
+            self.node_shapes[node] = f(self.node_shapes[node.left], self.node_shapes[node.right])
 
 
 def visit(tree, rt_vals):
