@@ -74,6 +74,16 @@ def test7():
     assert results == [('a', (100,)), ('b', (100,)), ('a + b', (100,)), ('1', ()), ('a + b + 1', (100,))]
 
 
+def test8():
+    code = """
+    a @ b
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {"a": np.random.randn(100), "b": np.random.randn(100)}
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (100,)), ('b', (100,)), ('a @ b', ())]
+
 
 def test10():
     code = """
