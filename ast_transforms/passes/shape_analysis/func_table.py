@@ -28,31 +28,35 @@ def range(*args):
     return None 
 
 def slice(low, up, step):
-    for arg in [low, up, step]:
-        assert isinstance(arg, (int, type(None), str))
-    
+    # ---- Validate inputs ----
+    for name, arg in [("low", low), ("up", up), ("step", step)]:
+        if not isinstance(arg, (int, type(None), str)):
+            raise TypeError(f"{name} must be int, str, or None")
+
     step = 1 if step is None else step
     if step != 1:
         raise RuntimeError("Non-1 step is not supported in slice")
-    
-    low = 0 if low is None else low
-    assert isinstance(low, (int, str)) and isinstance(up, (int, type(None), str))
 
-    if isinstance(low, int):
-        assert low >= 0, "Slice lower bound must be a non-negative integer"
-        if isinstance(up, int):
-            return (up - low,)
-        elif isinstance(up, type(None)):
-            return (None,) if low == 0 else (-low,)
-        elif isinstance(up, str):
-            return (f':{up}',) if low == 0 else (f'{low}:{up}',)
-        else:
-            assert False
-    else:
-        if up is None:
-            return (f'{low}:',)
-        else:
-            return (f'{low}:{up}',)
+    low = 0 if low is None else low
+
+    if isinstance(low, int) and low < 0:
+        raise ValueError("Slice lower bound must be non-negative")
+
+    # ---- Dispatch rules ----
+    table = {
+        (int, int): lambda low, up: (up - low,),
+        (int, type(None)): lambda low, up: (None,) if low == 0 else (-low,),
+        (int, str): lambda low, up: (f":{up}",) if low == 0 else (f"{low}:{up}",),
+        (str, int): lambda low, up: (f"{low}:{up}",),
+        (str, type(None)): lambda low, up: (f"{low}:",),
+        (str, str): lambda low, up: (f"{low}:{up}",),
+    }
+
+    key = (type(low), type(up))
+    if key not in table:
+        raise NotImplementedError(f"Unsupported slice shape: low={low}, up={up}")
+
+    return table[key](low, up)
 
 def subscript(base, indices):
     shape = []
