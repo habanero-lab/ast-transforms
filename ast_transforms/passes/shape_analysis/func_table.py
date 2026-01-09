@@ -66,20 +66,17 @@ def subscript(base, indices):
             pass
         elif len(idx) == 1:
             size = idx[0]
-            # Case 2: non-negative integer index
-            if isinstance(size, int) and size >= 0:
-                shape.append(size)
-            # Case 3: negative integer index
-            elif isinstance(size, int) and size < 0:
-                shape.append(base[i] + size)
-            # Case 4: None index => full slice
-            elif size is None:
-                shape.append(base[i])
-            # Case 5: symbolic index
-            elif isinstance(size, str):
-                shape.append(size)
-            else:
-                assert False, "Should not reach here"
+            if not isinstance(size, (int, type(None), str)):
+                raise TypeError("A shape dimension must be int, str, or None")
+            
+            table = {
+                int: lambda size: size if size >= 0 else base[i] + size,
+                type(None): lambda size: base[i],
+                str: lambda size: size
+            }
+
+            key = type(size)
+            shape.append(table[key](size))
         else:
             assert False, "Should not reach here"
     shape += base[len(indices):]
