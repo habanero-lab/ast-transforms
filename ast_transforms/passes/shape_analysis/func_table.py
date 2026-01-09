@@ -19,6 +19,35 @@ def matmul_generic(left, right):
         raise RuntimeError(f"Mismatched contracting dimension found for matmul: {left[-1]} and {right[0]}")
     return left[:-1] + right[1:]
 
+def range(*args):
+    '''
+    The shape of range cannot be determined by the shape of its arguments.
+    So simply return a None here, need another pass to pass the values of 
+    the arguments.
+    '''
+    return None 
+
+def subscript(base, indices):
+    shape = []
+    for i, idx in enumerate(indices):
+        # Case 1: scalar index
+        if idx == ():
+            pass
+        elif len(idx) == 1:
+            size = idx[0]
+            if isinstance(size, int) and size >= 0:
+                shape.append(size)
+            elif isinstance(size, int) and size < 0:
+                shape.append(base[i] + size)
+            elif size is None:
+                shape.append(base[i])
+            else:
+                raise NotImplementedError
+        else:
+            assert False, "Impossible path"
+    shape += base[len(indices):]
+    return tuple(shape)
+
 def numpy_sin(a):
     return uop_generic(a)
 
