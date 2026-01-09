@@ -54,7 +54,6 @@ def slice(low, up, step):
         else:
             return (f'{low}:{up}',)
 
-
 def subscript(base, indices):
     shape = []
     for i, idx in enumerate(indices):

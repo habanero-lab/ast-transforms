@@ -17,7 +17,7 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             elif hasattr(val, 'shape'):
                 self.var_shapes[var] = val.shape
             else:
-                self.var_shapes[var] = None  # otherwise shape is undefined
+                raise RuntimeError(f"Unsupported type: {type(val)}")
 
     def init_module_names(self, rt_vals):
         for var, val in rt_vals.items():
@@ -29,7 +29,7 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         if isinstance(node.value, (int, float, bool)):
             self.node_shapes[node] = ()
         else:
-            self.node_shapes[node] = None  # otherwise shape is undefined
+            raise RuntimeError(f"Unsupported constant type: {type(node.value)}")
 
     def visit_Name(self, node):
         if isinstance(node.ctx, ast.Load):
