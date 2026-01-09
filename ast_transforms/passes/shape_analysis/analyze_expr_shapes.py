@@ -101,31 +101,6 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         f = getattr(func_table, 'slice')
         self.node_shapes[node] = f(*args)
 
-        # for arg in [node.lower, node.upper, node.step]:
-        #     assert isinstance(arg, ast.Constant) and isinstance(arg.value, int) or arg is None, \
-        #         "Slice bounds must be integer constants or None"
-
-        # low, up, step = [x.value if isinstance(x, ast.Constant) else x for x in [node.lower, node.upper, node.step]]
-        # low = 0 if low == None else low
-        # step = 1 if step == None else step
-        # if step != 1:
-        #     raise RuntimeError("Non-1 step is not supported in slice")
-        
-        # assert isinstance(low, int) and low >= 0, "Slice lower bound must be a non-negative integer"
-
-        # if up is None:
-        #     if low == 0:
-        #         # None represents the whole array
-        #         self.node_shapes[node] = (None,)
-        #     else:
-        #         # A negative shape means length-low
-        #         self.node_shapes[node] = (-low,)
-        # elif isinstance(up, int):
-        #     self.node_shapes[node] = (up - low,)
-        # else:
-        #     assert False
-
-
 def visit(tree, rt_vals):
     visitor = AnalyzeExprShapes(rt_vals)
     visitor.visit(tree)
