@@ -27,6 +27,34 @@ def range(*args):
     '''
     return None 
 
+def slice(low, up, step):
+    for arg in [low, up, step]:
+        assert isinstance(arg, (int, type(None), str))
+    
+    step = 1 if step is None else step
+    if step != 1:
+        raise RuntimeError("Non-1 step is not supported in slice")
+    
+    low = 0 if low is None else low
+    assert isinstance(low, (int, str)) and isinstance(up, (int, type(None), str))
+
+    if isinstance(low, int):
+        assert low >= 0, "Slice lower bound must be a non-negative integer"
+        if isinstance(up, int):
+            return (up - low,)
+        elif isinstance(up, type(None)):
+            return (None,) if low == 0 else (-low,)
+        elif isinstance(up, str):
+            return f'{low}:{up}'
+        else:
+            assert False
+    else:
+        if up is None:
+            return f'{low}:'
+        else:
+            return f'{low}:{up}'
+
+
 def subscript(base, indices):
     shape = []
     for i, idx in enumerate(indices):

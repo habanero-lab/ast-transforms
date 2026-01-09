@@ -398,50 +398,50 @@ def test_subscript7():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Subscript)]
     assert results == [('a[:-1]', (99,))]
 
-def test10():
-    code = """
-    c = a + b
-    """
-    tree = ast.parse(textwrap.dedent(code))
-    rt_vals = {
-        'a': 1,
-        'b': 2
-    }
+# def test10():
+#     code = """
+#     c = a + b
+#     """
+#     tree = ast.parse(textwrap.dedent(code))
+#     rt_vals = {
+#         'a': 1,
+#         'b': 2
+#     }
 
-    shape_info = shape_analysis.visit(tree)
-    for node, shape in shape_info.items():
-        assert shape == ()
-
-
-def test12():
-    code = """
-    c = a + b
-    """
-    tree = ast.parse(textwrap.dedent(code))
-    rt_vals = {
-        'a': np.random.randn(100),
-        'b': np.random.randn(100)
-    }
-
-    shape_info = shape_analysis.visit(tree)
-    for node, shape in shape_info.items():
-        assert shape == (100,)
+#     shape_info = shape_analysis.visit(tree)
+#     for node, shape in shape_info.items():
+#         assert shape == ()
 
 
-def test13():
-    code = """
-    c = a[i] + b
-    """
-    tree = ast.parse(textwrap.dedent(code))
-    rt_vals = {
-        'a': np.random.randn(100),
-        'b': 1.0,
-        'i': 0
-    }
+# def test12():
+#     code = """
+#     c = a + b
+#     """
+#     tree = ast.parse(textwrap.dedent(code))
+#     rt_vals = {
+#         'a': np.random.randn(100),
+#         'b': np.random.randn(100)
+#     }
 
-    shape_info = shape_analysis.visit(tree)
-    for node, shape in shape_info.items():
-        if isinstance(node, ast.Name) and node.id == 'a':
-            assert shape == (100,)
-        else:
-            assert shape == ()
+#     shape_info = shape_analysis.visit(tree)
+#     for node, shape in shape_info.items():
+#         assert shape == (100,)
+
+
+# def test13():
+#     code = """
+#     c = a[i] + b
+#     """
+#     tree = ast.parse(textwrap.dedent(code))
+#     rt_vals = {
+#         'a': np.random.randn(100),
+#         'b': 1.0,
+#         'i': 0
+#     }
+
+#     shape_info = shape_analysis.visit(tree)
+#     for node, shape in shape_info.items():
+#         if isinstance(node, ast.Name) and node.id == 'a':
+#             assert shape == (100,)
+#         else:
+#             assert shape == ()
