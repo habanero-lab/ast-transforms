@@ -45,14 +45,14 @@ def slice(low, up, step):
         elif isinstance(up, type(None)):
             return (None,) if low == 0 else (-low,)
         elif isinstance(up, str):
-            return f'{low}:{up}'
+            return (f':{up}',) if low == 0 else (f'{low}:{up}',)
         else:
             assert False
     else:
         if up is None:
-            return f'{low}:'
+            return (f'{low}:',)
         else:
-            return f'{low}:{up}'
+            return (f'{low}:{up}',)
 
 
 def subscript(base, indices):
@@ -74,7 +74,7 @@ def subscript(base, indices):
                 shape.append(base[i])
             # Case 5: symbolic index
             elif isinstance(size, str):
-                raise NotImplementedError
+                shape.append(size)
             else:
                 assert False, "Should not reach here"
         else:

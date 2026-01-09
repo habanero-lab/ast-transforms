@@ -314,6 +314,18 @@ def test_slice7():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Slice)]
     assert results == [(':-1', (-1,))]
 
+def test_slice8():
+    code = """
+    a[:i]
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(100),
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Slice)]
+    assert results == [(':i', (':i',))]
+
 def test_subscript1():
     code = """
     a[0:2]
@@ -397,6 +409,7 @@ def test_subscript7():
     shape_info = shape_analysis.visit(tree, rt_vals)
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Subscript)]
     assert results == [('a[:-1]', (99,))]
+
 
 # def test10():
 #     code = """
