@@ -36,9 +36,9 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             if node.id in self.var_shapes:
                 self.node_shapes[node] = self.var_shapes[node.id]
             else:
-                raise RuntimeError
+                raise RuntimeError(f"Name {node.id} not found in runtime values")
         else:
-            raise RuntimeError
+            raise NotImplementedError("Storing to a variable is not supported")
         
     # Five ways to combine nodes
     def visit_UnaryOp(self, node):
@@ -100,6 +100,8 @@ class AnalyzeExprShapes(ast.NodeVisitor):
                 args.append(arg.value)
             elif isinstance(arg, ast.expr):
                 args.append(ast.unparse(arg))
+            else:
+                raise RuntimeError("Should not reach here")
         
         f = getattr(func_table, 'slice')
         self.node_shapes[node] = f(*args)

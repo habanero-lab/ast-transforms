@@ -91,49 +91,7 @@ def numpy_cos(a):
 def numpy_tan(a):
     return uop_generic(a)
 
-def numpy_arcsin(a):
-    return uop_generic(a)
-
-def numpy_asin(a):
-    return uop_generic(a)
-
-def numpy_arccos(a):
-    return uop_generic(a)
-
-def numpy_acos(a):
-    return uop_generic(a)
-
-def numpy_arctan(a):
-    return uop_generic(a)
-
-def numpy_atan(a):
-    return uop_generic(a)
-
 def numpy_sinh(a):
-    return uop_generic(a)
-
-def numpy_cosh(a):
-    return uop_generic(a)
-
-def numpy_tanh(a):
-    return uop_generic(a)
-
-def numpy_arcsinh(a):
-    return uop_generic(a)
-
-def numpy_asinh(a):
-    return uop_generic(a)
-
-def numpy_arccosh(a):
-    return uop_generic(a)
-
-def numpy_acosh(a):
-    return uop_generic(a)
-
-def numpy_arctanh(a):
-    return uop_generic(a)
-
-def numpy_atanh(a):
     return uop_generic(a)
 
 def numpy_round(a, decimals=()):
