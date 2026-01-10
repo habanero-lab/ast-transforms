@@ -57,6 +57,25 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         else:
             raise NotImplementedError
         
+    def is_special_funcs(self, f):
+        if f.__name__ in ['numpy_sum']:
+            return True
+        else:
+            return False
+        
+    def handle_special_funcs(self, f, args):
+        if f.__name__ == 'numpy_sum':
+            assert len(args) in [1, 2], f"numpy_sum should either one or two arguments, but got {len(args)}"
+            func_args = [self.node_shapes[args[0]]]
+            if len(args) == 2:
+                if not (isinstance(args[1], ast.Constant) and isinstance(args[1].value, int)):
+                    raise RuntimeError("Second argument for numpy_sum should be an int constant for shape analysis")
+                
+                func_args.append(args[1].value)
+            return func_table.numpy_sum(*func_args)
+        else:
+            raise NotImplementedError
+        
     def visit_Call(self, node: ast.Call):
         for arg in node.args:
             self.visit(arg)
@@ -75,7 +94,10 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         else:
             assert False, "Impossible path"
 
-        self.node_shapes[node] = f(*[self.node_shapes[arg] for arg in node.args])
+        if self.is_special_funcs(f):
+            self.node_shapes[node] = self.handle_special_funcs(f, node.args)
+        else:
+            self.node_shapes[node] = f(*[self.node_shapes[arg] for arg in node.args])
 
     def visit_Subscript(self, node):
         self.generic_visit(node)

@@ -240,6 +240,58 @@ def test_call_np_pow3():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
     assert results == [('a', (100,)), ('b', (100,)), ('np.pow(a, b)', (100,))]
 
+def test_call_np_sum1():
+    code = """
+    np.sum(a)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(100),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (100,)), ('np.sum(a)', ())]
+
+def test_call_np_sum2():
+    code = """
+    np.sum(a)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(3, 4),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (3, 4)), ('np.sum(a)', ())]
+
+def test_call_np_sum3():
+    code = """
+    np.sum(a, 0)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(3, 4),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if shape != ()]
+    assert results == [('a', (3, 4)), ('np.sum(a, 0)', (4,))]
+
+def test_call_np_sum4():
+    code = """
+    np.sum(a, 1)
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(3, 4),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if shape != ()]
+    assert results == [('a', (3, 4)), ('np.sum(a, 1)', (3,))]
+
 def test_slice1():
     code = """
     a[0:2]

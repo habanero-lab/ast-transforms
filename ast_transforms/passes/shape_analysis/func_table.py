@@ -113,6 +113,27 @@ def numpy_power(a, b):
 def numpy_add(a, b):
     return binop_generic(a, b)
 
+def numpy_subtract(a, b):
+    return binop_generic(a, b)
+
+def numpy_multiply(a, b):
+    return binop_generic(a, b)
+
+def numpy_divide(a, b):
+    return binop_generic(a, b)
+
+def numpy_sum(a, axis=None):
+    if axis != None:
+        assert isinstance(axis, int)
+        if not (axis >= 0 and axis < len(a)):
+            raise ValueError(f"axis={axis} must be in range [0, {len(a)})")
+        
+        a = list(a)
+        del a[axis]
+        return tuple(a)
+    else:
+        return ()
+
 
 def pow(a, b):
     return numpy_pow(a, b)
