@@ -57,16 +57,19 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         else:
             raise NotImplementedError
         
-    def visit_Call(self, node):
+    def visit_Call(self, node: ast.Call):
         for arg in node.args:
             self.visit(arg)
+
+        if not (isinstance(node.func, ast.Name) or isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)):
+            raise RuntimeError("Function calls only suport named calls or named module calls")
 
         if isinstance(node.func, ast.Name):
             f = getattr(func_table, node.func.id)
         elif isinstance(node.func, ast.Attribute):
-            assert isinstance(node.func.value, ast.Name), \
-                "Function calls only suport named calls or named module calls"            
-            assert node.func.value.id in self.modules
+            if not node.func.value.id in self.modules:
+                raise KeyError(f"Module {node.func.value.id} not found in runtime vals")
+            
             module_name = self.modules[node.func.value.id].__name__
             f = getattr(func_table, f"{module_name}_{node.func.attr}")
         else:
