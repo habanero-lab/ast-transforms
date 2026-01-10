@@ -122,7 +122,7 @@ def numpy_multiply(a, b):
 def numpy_divide(a, b):
     return binop_generic(a, b)
 
-def numpy_sum(a, axis=None):
+def numpy_reduce_generic(a, axis=None):
     if axis != None:
         assert isinstance(axis, int)
         if not (axis >= 0 and axis < len(a)):
@@ -133,7 +133,21 @@ def numpy_sum(a, axis=None):
         return tuple(a)
     else:
         return ()
+    
+def numpy_sum(a, axis=None):
+    return numpy_reduce_generic(a, axis)
 
+def numpy_min(a, axis=None):
+    return numpy_reduce_generic(a, axis)
+
+def numpy_max(a, axis=None):
+    return numpy_reduce_generic(a, axis)
+
+def numpy_argmin(a, axis=None):
+    return numpy_reduce_generic(a, axis)
+
+def numpy_argmax(a, axis=None):
+    return numpy_reduce_generic(a, axis)
 
 def pow(a, b):
     return numpy_pow(a, b)
