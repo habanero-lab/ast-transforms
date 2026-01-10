@@ -432,6 +432,18 @@ def test_subscript8():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Subscript)]
     assert results == [('a[:i + 1]', (':i + 1',))]
 
+def test_subscript9():
+    code = """
+    a[0:3, :, :i+1]
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(10, 10, 10),
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, ast.Subscript)]
+    assert results == [('a[0:3, :, :i + 1]', (3, 10, ':i + 1',))]
+
 def test_subscripted_matmul1():
     code = """
     a[:] @ b[:]
