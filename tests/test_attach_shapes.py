@@ -135,6 +135,16 @@ def test_binary9():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
     assert results == [('a', (100,)), ('b', (100,)), ('a @ b', ())]
 
+def test_binary10():
+    code = """
+    a @ b
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {"a": np.random.randn(10, 100), "b": np.random.randn(100)}
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (10, 100,)), ('b', (100,)), ('a @ b', (10,))]
+    
 def test_call_np_add1():
     code = """
     np.add(a, b)
