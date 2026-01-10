@@ -58,21 +58,21 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             raise NotImplementedError
         
     def is_special_funcs(self, f):
-        if f.__name__ in ['numpy_sum']:
+        if f.__name__ in ['numpy_sum', 'numpy_min', 'numpy_max', 'numpy_argmin', 'numpy_argmax']:
             return True
         else:
             return False
         
     def handle_special_funcs(self, f, args):
-        if f.__name__ == 'numpy_sum':
-            assert len(args) in [1, 2], f"numpy_sum should either one or two arguments, but got {len(args)}"
+        if f.__name__ in ['numpy_sum', 'numpy_min', 'numpy_max', 'numpy_argmin', 'numpy_argmax']:
+            assert len(args) in [1, 2], f"numpy_<reduce> should either one or two arguments, but got {len(args)}"
             func_args = [self.node_shapes[args[0]]]
             if len(args) == 2:
                 if not (isinstance(args[1], ast.Constant) and isinstance(args[1].value, int)):
-                    raise RuntimeError("Second argument for numpy_sum should be an int constant for shape analysis")
+                    raise RuntimeError("Second argument for numpy_<reduce> should be an int constant for shape analysis")
                 
                 func_args.append(args[1].value)
-            return func_table.numpy_sum(*func_args)
+            return func_table.numpy_reduce_generic(*func_args)
         else:
             raise NotImplementedError
         
