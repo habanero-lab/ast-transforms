@@ -75,7 +75,10 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         for arg in node.args:
             self.visit(arg)
 
-        if not (isinstance(node.func, ast.Name) or isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)):
+        if not (
+            (isinstance(node.func, ast.Name) or 
+             isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name))
+        ):
             raise RuntimeError("Function calls only suport named calls or named module calls")
 
         if isinstance(node.func, ast.Name):
@@ -103,7 +106,11 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         self.node_shapes[node] = f(self.node_shapes[node.value], indices)
 
     def visit_Slice(self, node: ast.Slice):  
-        if isinstance(node.upper, ast.UnaryOp) and isinstance(node.upper.op, ast.USub) and isinstance(node.upper.operand, ast.Constant):
+        if (
+            isinstance(node.upper, ast.UnaryOp)
+            and isinstance(node.upper.op, ast.USub) 
+            and isinstance(node.upper.operand, ast.Constant)
+        ):
             node.upper = ast.Constant(value=-node.upper.operand.value)
 
         args = []
