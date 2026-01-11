@@ -133,21 +133,6 @@ def numpy_reduce_generic(a, axis=None):
         return tuple(a)
     else:
         return ()
-    
-def numpy_sum(a, axis=None):
-    return numpy_reduce_generic(a, axis)
-
-def numpy_min(a, axis=None):
-    return numpy_reduce_generic(a, axis)
-
-def numpy_max(a, axis=None):
-    return numpy_reduce_generic(a, axis)
-
-def numpy_argmin(a, axis=None):
-    return numpy_reduce_generic(a, axis)
-
-def numpy_argmax(a, axis=None):
-    return numpy_reduce_generic(a, axis)
 
 def pow(a, b):
     return numpy_pow(a, b)

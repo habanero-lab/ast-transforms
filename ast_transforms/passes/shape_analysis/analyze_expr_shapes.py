@@ -56,15 +56,9 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             self.node_shapes[node] = f(self.node_shapes[node.left], self.node_shapes[node.right])
         else:
             raise NotImplementedError
-        
-    def is_special_funcs(self, f):
-        if f.__name__ in ['numpy_sum', 'numpy_min', 'numpy_max', 'numpy_argmin', 'numpy_argmax']:
-            return True
-        else:
-            return False
-        
-    def handle_special_funcs(self, f, args):
-        if f.__name__ in ['numpy_sum', 'numpy_min', 'numpy_max', 'numpy_argmin', 'numpy_argmax']:
+
+    def dispatch_call(self, f_name, args):
+        if f_name in ['numpy_sum', 'numpy_min', 'numpy_max', 'numpy_argmin', 'numpy_argmax']:
             assert len(args) in [1, 2], f"numpy_<reduce> should either one or two arguments, but got {len(args)}"
             func_args = [self.node_shapes[args[0]]]
             if len(args) == 2:
@@ -74,7 +68,8 @@ class AnalyzeExprShapes(ast.NodeVisitor):
                 func_args.append(args[1].value)
             return func_table.numpy_reduce_generic(*func_args)
         else:
-            raise NotImplementedError
+            f = getattr(func_table, f_name)
+            return f(*[self.node_shapes[arg] for arg in args])
         
     def visit_Call(self, node: ast.Call):
         for arg in node.args:
@@ -84,20 +79,17 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             raise RuntimeError("Function calls only suport named calls or named module calls")
 
         if isinstance(node.func, ast.Name):
-            f = getattr(func_table, node.func.id)
+            f_name = node.func.id
         elif isinstance(node.func, ast.Attribute):
             if not node.func.value.id in self.modules:
                 raise KeyError(f"Module {node.func.value.id} not found in runtime vals")
             
             module_name = self.modules[node.func.value.id].__name__
-            f = getattr(func_table, f"{module_name}_{node.func.attr}")
+            f_name = f"{module_name}_{node.func.attr}"
         else:
             assert False, "Impossible path"
 
-        if self.is_special_funcs(f):
-            self.node_shapes[node] = self.handle_special_funcs(f, node.args)
-        else:
-            self.node_shapes[node] = f(*[self.node_shapes[arg] for arg in node.args])
+        self.node_shapes[node] = self.dispatch_call(f_name, node.args)
 
     def visit_Subscript(self, node):
         self.generic_visit(node)
