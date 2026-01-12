@@ -535,19 +535,33 @@ def test_subscripted_matmul3():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, (ast.Subscript, ast.BinOp))]
     assert results == [('a[:i, :j]', (':i', ':j')), ('b[:j]', (':j',)), ('a[:i, :j] @ b[:j]', (':i',))]
 
-# def test10():
-#     code = """
-#     c = a + b
-#     """
-#     tree = ast.parse(textwrap.dedent(code))
-#     rt_vals = {
-#         'a': 1,
-#         'b': 2
-#     }
+def test_assign1():
+    code = """
+    c = a + b
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        'a': 1,
+        'b': 2
+    }
 
-#     shape_info = shape_analysis.visit(tree)
-#     for node, shape in shape_info.items():
-#         assert shape == ()
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', ()), ('b', ()), ('a + b', ()), ('c', ())]
+
+def test_assign2():
+    code = """
+    c = a + b
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        'a': np.random.randn(10),
+        'b': 2
+    }
+
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+    assert results == [('a', (10,)), ('b', ()), ('a + b', (10,)), ('c', (10,))]
 
 
 # def test12():

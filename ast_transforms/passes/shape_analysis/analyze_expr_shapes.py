@@ -32,14 +32,11 @@ class AnalyzeExprShapes(ast.NodeVisitor):
             raise RuntimeError(f"Unsupported constant type: {type(node.value)}")
 
     def visit_Name(self, node):
-        if isinstance(node.ctx, ast.Load):
-            if node.id in self.var_shapes:
-                self.node_shapes[node] = self.var_shapes[node.id]
-            else:
-                raise RuntimeError(f"Name {node.id} not found in runtime values")
+        if node.id in self.var_shapes:
+            self.node_shapes[node] = self.var_shapes[node.id]
         else:
-            raise NotImplementedError("Storing to a variable is not supported")
-        
+            raise RuntimeError(f"Name {node.id} not found in runtime values")
+    
     # Five ways to combine nodes
     def visit_UnaryOp(self, node):
         self.generic_visit(node)
@@ -127,7 +124,22 @@ class AnalyzeExprShapes(ast.NodeVisitor):
         f = getattr(func_table, 'slice')
         self.node_shapes[node] = f(*args)
 
+class AnalyzeAssignShapes(AnalyzeExprShapes):
+    def __init__(self, rt_vals):
+        super().__init__(rt_vals)
+
+    def visit_Assign(self, node):
+        self.visit(node.value)
+        target = node.targets[0]
+        if isinstance(target, ast.Name) and target.id not in self.var_shapes:
+            self.var_shapes[target.id] = self.node_shapes[node.value]
+
+        self.visit(target)
+        # Check if the shape of the target and value are the same
+        if self.node_shapes[target] != self.node_shapes[node.value]:
+            raise RuntimeError(f"Shapes mismatch for assignment: {ast.unparse(node)}")
+
 def visit(tree, rt_vals):
-    visitor = AnalyzeExprShapes(rt_vals)
+    visitor = AnalyzeAssignShapes(rt_vals)
     visitor.visit(tree)
     return visitor.node_shapes
