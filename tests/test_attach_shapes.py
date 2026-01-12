@@ -292,6 +292,19 @@ def test_call_np_sum4():
     results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if shape != ()]
     assert results == [('a', (3, 4)), ('np.sum(a, 1)', (3,))]
 
+def test_call_np_sum5():
+    code = """
+    np.sum(a[:, 0])
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    rt_vals = {
+        "a": np.random.randn(3, 4),
+        "np": np
+    }
+    shape_info = shape_analysis.visit(tree, rt_vals)
+    results = [(ast.unparse(node), shape) for node, shape in shape_info.items() if isinstance(node, (ast.Subscript, ast.Call))]
+    assert results == [('a[:, 0]', (3,)), ('np.sum(a[:, 0])', ())]
+
 def test_slice1():
     code = """
     a[0:2]
