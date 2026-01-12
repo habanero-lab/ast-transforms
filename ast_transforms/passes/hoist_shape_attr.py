@@ -6,21 +6,27 @@ class HoistShapeAttr(ast.NodeTransformer):
     before the loop.
     '''
     def __init__(self):
-        self.hoisted_shapes = []
+        self.hoisted_shapes = None
 
     def visit_Subscript(self, node):
         self.generic_visit(node)
-        if isinstance(node.value, ast.Attribute) and node.value.attr == 'shape' \
-              and isinstance(node.slice, ast.Constant) and isinstance(node.value.value, ast.Name):
+        if (
+            isinstance(node.value, ast.Attribute)
+            and isinstance(node.value.value, ast.Name)
+            and node.value.attr == 'shape'
+            and isinstance(node.slice, ast.Constant)
+        ):
             array_name = node.value.value.id
             dim_index = node.slice.value
             new_name = f"{array_name}_shape_{dim_index}"
             if (array_name, dim_index) not in self.hoisted_shapes:
                 self.hoisted_shapes.append((array_name, dim_index))            
             return ast.Name(id=new_name, ctx=ast.Load())
-        return node
+        else:
+            return node
 
     def visit_For(self, node):
+        self.hoisted_shapes = []
         self.generic_visit(node)
         new_assignments = []
         for array_name, dim_index in self.hoisted_shapes:
@@ -39,7 +45,6 @@ class HoistShapeAttr(ast.NodeTransformer):
                 value=shape_access
             )
             new_assignments.append(assign)
-        self.hoisted_shapes.clear()
         return new_assignments + [node]
     
 def transform(tree):
