@@ -6,7 +6,7 @@ class HoistShapeAttr(ast.NodeTransformer):
     before the loop.
     '''
     def __init__(self):
-        self.hoisted_shapes = None
+        self.hoisted_shapes_stack = []
 
     def visit_Subscript(self, node):
         self.generic_visit(node)
@@ -19,17 +19,18 @@ class HoistShapeAttr(ast.NodeTransformer):
             array_name = node.value.value.id
             dim_index = node.slice.value
             new_name = f"{array_name}_shape_{dim_index}"
-            if (array_name, dim_index) not in self.hoisted_shapes:
-                self.hoisted_shapes.append((array_name, dim_index))            
+            tos = self.hoisted_shapes_stack[-1]
+            if (array_name, dim_index) not in tos:
+                tos.append((array_name, dim_index))            
             return ast.Name(id=new_name, ctx=ast.Load())
         else:
             return node
 
     def visit_For(self, node):
-        self.hoisted_shapes = []
+        self.hoisted_shapes_stack.append([])
         self.generic_visit(node)
         new_assignments = []
-        for array_name, dim_index in self.hoisted_shapes:
+        for array_name, dim_index in self.hoisted_shapes_stack.pop():
             new_name = f"{array_name}_shape_{dim_index}"
             shape_access = ast.Subscript(
                 value=ast.Attribute(
