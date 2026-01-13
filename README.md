@@ -1,6 +1,6 @@
 # AST Transforms
 
-A collection of AST-based Python transformations for manipulating code programmatically.
+A collection of Python AST-based code analysis and transformations.
 
 ## Installation
 
@@ -12,35 +12,21 @@ pip install ast_transforms
 
 ```python
 import ast
-import ast_transforms as at
+import numpy as np
+from ast_transforms.passes import shape_analysis
 
-code = '''
-@mydecorator
-def foo():
-    print("foo")
-'''
-
-# Parse code into an AST
+code = """
+a + 1
+"""
 tree = ast.parse(code)
-
-# Apply transformations
-tree = at.remove_func_decorator(tree)  # removes all function decorators
-
-# Convert AST back to source code
-new_code = ast.unparse(tree)
-print(new_code)
+runtime_vals = {"a": np.random.randn(100)}
+shape_info = shape_analysis.visit(tree, runtime_vals)
+results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
+assert results == [('a', (100,)), ('1', ()), ('a + 1', (100,))]
 ```
 
-**Output:**
-
-```python
-def foo():
-    print("foo")
-```
-
----
 
 ## Passes
 
-* `remove_func_decorator(tree)` – removes all decorators from functions.
+* `shape_analysis` – returns a dictionary where each node is mapped to a shape.
 * More passes are to be added ...
