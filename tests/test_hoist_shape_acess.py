@@ -1,6 +1,6 @@
 import ast
 import textwrap
-import ast_transforms as at
+from ast_transforms.passes import hoist_shape_access
 
 def test1():
     code = """
@@ -16,7 +16,7 @@ def test1():
         y = a[i] + b[i]
     """
     tree = ast.parse(textwrap.dedent(code))
-    tree = at.hoist_shape_attr(tree)
+    tree = hoist_shape_access.transform(tree)
     assert ast.dump(tree) == ast.dump(ast.parse(textwrap.dedent(expected)))
 
 def test2():
@@ -33,7 +33,7 @@ def test2():
             b[i,j] = a[i,j] + 1
     """
     tree = ast.parse(textwrap.dedent(code))
-    tree = at.hoist_shape_attr(tree)
+    tree = hoist_shape_access.transform(tree)
     print(ast.unparse(tree))
     assert ast.dump(tree) == ast.dump(ast.parse(textwrap.dedent(expected)))
 
