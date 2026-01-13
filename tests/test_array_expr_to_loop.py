@@ -21,7 +21,6 @@ def test_add1():
         c[__i0] = a[__i0] + b
     """
     new_code = ast.unparse(tree)
-    print(new_code)
     assert new_code == ast.unparse(ast.parse(textwrap.dedent(expected)))
 
 def test_add2():
@@ -56,8 +55,8 @@ def test_add3():
     tree = array_expr_to_loop.transform(tree, rt_vals)
 
     expected = """
-    for i in range(10):
-        c[i] = a[i] + b
+    for __i0 in range(10):
+        c[__i0] = a[__i0] + b
     """
     new_code = ast.unparse(tree)
     assert new_code == ast.unparse(ast.parse(textwrap.dedent(expected)))
