@@ -17,7 +17,7 @@ def test_add1():
     tree = array_expr_to_loop.transform(tree, rt_vals)
 
     expected = """
-    for __i0 in range(10):
+    for __i0 in range(0, 10):
         c[__i0] = a[__i0] + b
     """
     new_code = ast.unparse(tree)
@@ -36,7 +36,7 @@ def test_add2():
     tree = array_expr_to_loop.transform(tree, rt_vals)
 
     expected = """
-    for __i0 in range(10):
+    for __i0 in range(0, 10):
         c[__i0] = a[__i0] + b
     """
     new_code = ast.unparse(tree)
@@ -55,7 +55,7 @@ def test_add3():
     tree = array_expr_to_loop.transform(tree, rt_vals)
 
     expected = """
-    for __i0 in range(10):
+    for __i0 in range(0, 10):
         c[__i0] = a[__i0] + b
     """
     new_code = ast.unparse(tree)
