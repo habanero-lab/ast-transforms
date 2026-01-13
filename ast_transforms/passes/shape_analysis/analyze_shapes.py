@@ -135,7 +135,7 @@ class AnalyzeAssignShapes(AnalyzeExprShapes):
             self.var_shapes[target.id] = self.node_shapes[node.value]
 
         self.visit(target)
-        # Check if the shape of the target and value are the same
+        # Check if the shape of the target and the value are the same
         if self.node_shapes[target] != self.node_shapes[node.value]:
             raise RuntimeError(f"Shapes mismatch for assignment: {ast.unparse(node)}")
 
