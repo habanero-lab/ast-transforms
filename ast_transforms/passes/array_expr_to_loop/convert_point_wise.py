@@ -59,7 +59,7 @@ class Scalarize(ast.NodeTransformer):
             )
 
 
-class ArrayExprToLoop(ast.NodeTransformer):
+class PointwiseExprToLoop(ast.NodeTransformer):
     def __init__(self, shape_info, loop_index_prefix=None):
         self.shape_info = shape_info
         self.loop_index_prefix = loop_index_prefix if loop_index_prefix is not None else "__i"
@@ -124,4 +124,4 @@ def transform(tree, runtime_vals, loop_index_prefix=None):
     appeared in the input code should already be defined.
     '''
     shape_info = shape_analysis.visit(tree, runtime_vals)
-    return ArrayExprToLoop(shape_info, loop_index_prefix).visit(tree)
+    return PointwiseExprToLoop(shape_info, loop_index_prefix).visit(tree)
