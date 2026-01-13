@@ -1,18 +1,34 @@
 import ast
 import textwrap
-import ast_transforms as at
+from ast_transforms.passes import add_func_decorator
 
-def test_add_func_decorator_simple():
+def test1():
     code = """
     def foo():
         return 42
     """
     tree = ast.parse(textwrap.dedent(code))
-    new_tree = at.add_func_decorator(tree, "jit")
+    new_tree = add_func_decorator.transform(tree, "jit")
     new_code = ast.unparse(new_tree)
 
     expected = """
     @jit
+    def foo():
+        return 42
+    """
+    assert new_code == ast.unparse(ast.parse(textwrap.dedent(expected)))
+
+def test2():
+    code = """
+    def foo():
+        return 42
+    """
+    tree = ast.parse(textwrap.dedent(code))
+    new_tree = add_func_decorator.transform(tree, "numba.njit(parallel=True)")
+    new_code = ast.unparse(new_tree)
+
+    expected = """
+    @numba.njit(parallel=True)
     def foo():
         return 42
     """
