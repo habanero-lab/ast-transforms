@@ -139,7 +139,7 @@ class AnalyzeAssignShapes(AnalyzeExprShapes):
         if self.node_shapes[target] != self.node_shapes[node.value]:
             raise RuntimeError(f"Shapes mismatch for assignment: {ast.unparse(node)}")
 
-def visit(tree, rt_vals):
+def analyze(tree, rt_vals):
     visitor = AnalyzeAssignShapes(rt_vals)
     visitor.visit(tree)
     return visitor.node_shapes

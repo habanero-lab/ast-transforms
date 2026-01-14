@@ -1,6 +1,6 @@
 import ast
 import textwrap
-from ast_transforms.passes import add_func_decorator
+from astpass.passes import add_func_decorator
 
 def test1():
     code = """

@@ -13,14 +13,14 @@ pip install ast_transforms
 ```python
 import ast
 import numpy as np
-from ast_transforms.passes import shape_analysis
+from astpass.passes import shape_analysis
 
 code = """
 a + 1
 """
 tree = ast.parse(code)
 runtime_vals = {"a": np.random.randn(100)}
-shape_info = shape_analysis.visit(tree, runtime_vals)
+shape_info = shape_analysis.analyze(tree, runtime_vals)
 results = [(ast.unparse(node), shape) for node, shape in shape_info.items()]
 assert results == [('a', (100,)), ('1', ()), ('a + 1', (100,))]
 ```

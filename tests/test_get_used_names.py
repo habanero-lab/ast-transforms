@@ -1,6 +1,6 @@
 import ast
 import textwrap
-import ast_transforms as at
+import astpass as at
 
 def test_get_used_names():
     code = """

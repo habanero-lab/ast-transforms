@@ -1,6 +1,6 @@
 import ast
 import textwrap
-from ast_transforms.passes import hoist_shape_access
+from astpass.passes import hoist_shape_access
 
 def test1():
     code = """

@@ -2,7 +2,7 @@ import ast
 import textwrap
 import numpy as np
 
-from ast_transforms.passes import array_expr_to_loop
+from astpass.passes import array_expr_to_loop
 
 def test_add1():
     code = """
