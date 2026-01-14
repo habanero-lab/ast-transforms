@@ -1,7 +1,7 @@
 from ...passes import shape_analysis
 from .convert_point_wise import PointwiseExprToLoop, Scalarize
 
-class PointwiseAndReductionExprToLoop(PointwiseExprToLoop):
+class ReductionAndPointwiseExprToLoop(PointwiseExprToLoop):
     def gen_loop(self, node, low, up):
         # Todo
         return super().gen_loop(node, low, up)
@@ -30,7 +30,7 @@ def transform(tree, runtime_vals, loop_index_prefix=None):
 
         import ast
         import numpy as np
-        from ast_transforms.passes import array_expr_to_loop
+        from astpass.passes import array_expr_to_loop
 
         tree = ast.parse("c = a + b")
         rt_vals = {
@@ -50,4 +50,4 @@ def transform(tree, runtime_vals, loop_index_prefix=None):
     to be already defined.
     """
     shape_info = shape_analysis.visit(tree, runtime_vals)
-    return PointwiseExprToLoop(shape_info, loop_index_prefix).visit(tree)
+    return ReductionAndPointwiseExprToLoop(shape_info, loop_index_prefix).visit(tree)
